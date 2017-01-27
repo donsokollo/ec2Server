@@ -1,0 +1,129 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+	<nav class="navbar">
+
+	</nav>
+	<div class="container">
+		<section id="section1" class="panel panel-default">
+
+			<div class="panel-heading">
+				<div class="container">
+					<h3 class="panel-title">POSTing a file to Amazon S3</h3>
+				</div>
+			</div>
+			<div class="panel-body">
+				<form action="https://<%=bucket%>.s3.amazonaws.com/" method="POST" id="sign-up-form" class="form-horizontal" enctype="multipart/form-data">	
+
+					<div class="container">
+						<% fields.forEach(function(elem){ %>
+						<input type="hidden" name="<%= elem.name  %>" value="<%=elem.value %>"/>
+						<%}); %> 
+
+						<div class="col-xs-5">
+							<div class="form-group">
+								<label for="exampleInputFile">File input</label>
+								<input type="file" name="file">
+								<p class="help-block">File will be sent to the bucket <%=bucket%> </p>
+							</div>
+
+
+						</div>
+					</div>
+
+					<div class="container">
+						<div class="col-xs-3">
+							<input type="submit" class="btn  btn-primary btn-block" value="Confirm"/>
+						</div>
+					</div>
+
+				</form>
+
+				
+			</div>
+		</div>
+		<div class="panel panel-heading">
+			<div class="container">
+				<h3 class="panel-title">Rotation of image</h3>
+				<p>Please select the pictures that You want to rotate and click submit button.</p>                                                                                      
+				<div class="table-responsive">          
+					<table id="table", class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Thumbnail</th>
+								<th>Name</th>
+								<th>Key</th>
+								<th>Check for submission</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% for(var i=0; i<files.length; i++) {%>
+
+							<tr>
+
+								<td> <%= files[i].No %> </td>
+								<td>
+
+									<A HREF=<%= files[i].url %>>
+										<IMG HEIGHT=50 WIDTH=50 SRC=<%= files[i].url %>></A>
+
+										</td>
+										<td><span class="name"><%= files[i].name %></span></td>
+										<td><span id="Key", class="Key"><%= files[i].key %></span></td>
+										<td><input id="input", type="checkbox"/></td>
+									</tr>
+									<% } %>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<button id="submitBtn" class="btn  btn-primary btn-block">Submit for analysis</button>
+					<script>
+						submitBtn.onclick=function(){
+							var checkboxes = $("#table").find("#input");
+							var keys = $("#table").find("#Key");
+							console.log(checkboxes);
+							var Message = "";
+							for (i=0; i<keys.length; i++){
+								if (checkboxes[i].checked){
+									Message +=keys[i].innerText + ",";
+								}
+							}
+							console.log("+++++++++++++++++++++++++++++");
+							console.log(Message);
+							console.log("+++++++++++++++++++++++++++++");
+							$.ajax({
+								method: "POST",
+							dataType: 'text',//'jsonp'
+							crossDomain:true,
+							url: "http://127.0.0.1:8080/sendKey",
+							data: {Message:Message}
+						})
+							.done(function(msg){
+								window.location.replace("http://127.0.0.1:8080/openSuccessfulSubmission");
+								console.log("-+-+-+-+-+-+-+-+-+-+-+-+");
+								console.log("Files were sucessfuly sent");
+
+							})
+							
+
+						}
+
+					</script>
+				</div>
+
+
+				<footer class="panel-footer">
+
+
+
+				</footer>
+			</section>
+		</div>		
+	</body>
+	</html>
