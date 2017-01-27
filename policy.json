@@ -1,7 +1,8 @@
 {	"expiration" : {"day":1},
 	"conditions": [ ["starts-with", "$key", "DSkubelek/"],
     				 {"bucket": "lab4-weeia"}, 
-    				 {"acl": "private"},
+    				 {"Sid": "AllowPublicRead"},
+    				 {"acl": "public-read"},
     				 {"success_action_redirect": "http://localhost:8080/s3digest"}, 
     				 {"x-amz-meta-author": "ja"},
     				 ["content-length-range", 0, 1048576]

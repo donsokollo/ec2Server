@@ -61,7 +61,7 @@
 								<th>Check for submission</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody id="bodyOfPictureFile">
 							<% for(var i=0; i<files.length; i++) {%>
 
 							<tr>
@@ -74,8 +74,8 @@
 
 										</td>
 										<td><span class="name"><%= files[i].name %></span></td>
-										<td><span id="Key", class="Key"><%= files[i].key %></span></td>
-										<td><input id="input", type="checkbox"/></td>
+										<td><span, class="Key"><%= files[i].key %></span></td>
+										<td><input class="input", type="checkbox"/></td>
 									</tr>
 									<% } %>
 								</tbody>
@@ -85,8 +85,15 @@
 					<button id="submitBtn" class="btn  btn-primary btn-block">Submit for analysis</button>
 					<script>
 						submitBtn.onclick=function(){
-							var checkboxes = $("#table").find("#input");
-							var keys = $("#table").find("#Key");
+							
+							var cells = new Array();
+			$("#table").each(function(){
+ 			  cells.push($(this).html());
+			});
+							
+							var checkboxes = $("#bodyOfPictureFile").find("input");
+							var keys = $("#table").find(".Key");
+						
 							console.log(checkboxes);
 							var Message = "";
 							for (i=0; i<keys.length; i++){

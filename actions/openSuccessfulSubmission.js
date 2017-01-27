@@ -3,10 +3,16 @@ var INDEX_TEMPLATE = "UponSubmission.ejs";
 AWS.config.loadFromPath('./config.json');
 var sqs = new AWS.SQS();
 
+
 var task =  function(request, callback){
 
 	var SQSlink ="https://sqs.us-west-2.amazonaws.com/983680736795/SokolowskiSQS";
-	
+
+
+
+
+
+
 
 
 var MessageNumber;
