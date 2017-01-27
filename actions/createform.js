@@ -9,6 +9,10 @@ var POLICY_FILE = "policy.json";
 var INDEX_TEMPLATE = "index.ejs";
 
 
+
+
+
+
 var task = function(request, callback){
 	//1. load configuration
 	var awsConfig = helpers.readJSONFile(AWS_CONFIG_FILE);
@@ -30,17 +34,87 @@ var task = function(request, callback){
 
 
 	var s3 = new AWS.S3();
-	//var file = s3.listObjects(params = {}, callback);
-	//var metadata = s3.listObjectVersions(params = {}, callback);
+	var autoscaling = new AWS.AutoScaling();
+	var simpledb = new AWS.SimpleDB({apiVersion: '2009-04-15'});
+	
+	var domainName = 'Damian.Sokolowski.FormLogFile';
 
-	//policy.getConditions().push({"x-amz-meta-uploader": os.hostname()}); /// tu dodać
-	var params = {
-		Bucket: bucketname
+	var paramsCreateDomain = {
+		DomainName: domainName /* required */
 	};
-	s3.listObjects(params, function(err, data) {
-	  if (err) { 
-	  	console.log(err, err.stack);
-	  		  	callback(null, {template: INDEX_TEMPLATE, params:{fields:fields, bucket:bucketname, files:[{name: "Error"}]}});
+	var paramsListDomains = {
+		MaxNumberOfDomains: 100,
+		NextToken: 'STRING_VALUE'
+	};
+
+	var paramsPutAttributes = {
+		Attributes: [ /* required */
+		{
+			Name: 'Form invoked', /* required */
+			Value: 'The Createform has been invoked', /* required */
+			Replace: false
+		},
+		/* more items !!!!!!!! może time i content of table*/
+		],
+		DomainName: domainName,
+		ItemName: 'Item', /* required */
+  // Expected: {
+  //   Exists: true || false,
+  //   Name: 'STRING_VALUE',
+  //   Value: 'STRING_VALUE'
+  // }
+};
+
+var domains = [];
+simpledb.listDomains(paramsListDomains, function(err, data) {
+  if (err) console.log(err, err.stack); // an error occurred
+  else  {
+	  // console.log(data);           // successful response
+	  domains=data.DomainNames;
+	  console.log("Domains uploaded for existence checks of   "+domainName+"   domain");
+  	}
+});
+
+if (domains.indexOf(domainName) == -1){
+			simpledb.createDomain(paramsCreateDomain, function(err, data) {
+		  if (err) console.log(err, err.stack); // an error occurred
+		  else     {
+		  	console.log("- - - - - - - - - - - - - - - - - -");
+		  	console.log("New domain created");  
+
+
+				  	simpledb.putAttributes(paramsPutAttributes, function(err, data) {
+				  if (err) console.log(err, err.stack); // an error occurred
+				  else     {
+				  console.log(data); 
+				  console.log("- - - - - - - - - - - - - - - - - -");
+				  console.log("New entry added to log file");
+				  }         // successful response
+				});
+		  }         // successful response
+		});
+} else {
+			simpledb.putAttributes(paramsPutAttributes, function(err, data) {
+		  if (err) console.log(err, err.stack); // an error occurred
+		  else     {
+		  console.log(data); 
+		  console.log("- - - - - - - - - - - - - - - - - -");
+		  console.log("New entry added to log file");
+		  }         // successful response
+		});
+}
+
+
+
+
+
+var params = {
+	Bucket: bucketname
+};
+s3.listObjects(params, function(err, data) {
+	if (err) { 
+		console.log(err, err.stack);
+		callback(null, {template: INDEX_TEMPLATE, params:{fields:fields, bucket:bucketname, files:[{name: "Error"}]}});
 
 	  } // an error occurred
 	  else  {
@@ -57,43 +131,16 @@ var task = function(request, callback){
 	  			}
 	  		} 
 	  	})
-	  	console.log(files);
-
-//  var paramsS3 = {
-//   Bucket: bucketname, /* required */
-//   ACL: 'public-read',
-//   AccessControlPolicy: {
-//     Grants: [
-//       {
-//         Grantee: {
-//           Type: 'CanonicalUser', /* required */
-//         },
-//         Permission: 'READ'
-//       },
-//       /* more items */
-//     ],
-//     // Owner: {
-//     //   DisplayName: 'STRING_VALUE',
-//     //   ID: 'STRING_VALUE'
-//     // }
-//   },
-//   // ContentMD5: 'STRING_VALUE',
-//   // GrantFullControl: 'STRING_VALUE',
-//   // GrantRead: 'STRING_VALUE',
-//   // GrantReadACP: 'STRING_VALUE',
-//   // GrantWrite: 'STRING_VALUE',
-//   // GrantWriteACP: 'STRING_VALUE'
-// };
-// s3.putBucketAcl(paramsS3, function(err, data) {
-//   if (err) console.log(err, err.stack); // an error occurred
-//   else     console.log(data);           // successful response
-// });
+	  	console.log("- - - - - - - - - - - - - - - - - -");
+		  console.log("Files uploaded to front-end");
+	  	// console.log(files);
 
 
 
 
 
-	  	callback(null, {template: INDEX_TEMPLATE, params:{fields:fields, bucket:bucketname, files:files}});
+
+callback(null, {template: INDEX_TEMPLATE, params:{fields:fields, bucket:bucketname, files:files}});
 	  }              // successful response
 	});
 
