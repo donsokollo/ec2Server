@@ -58,9 +58,47 @@ var task = function(request, callback){
 	  		} 
 	  	})
 	  	console.log(files);
+
+//  var paramsS3 = {
+//   Bucket: bucketname, /* required */
+//   ACL: 'public-read',
+//   AccessControlPolicy: {
+//     Grants: [
+//       {
+//         Grantee: {
+//           Type: 'CanonicalUser', /* required */
+//         },
+//         Permission: 'READ'
+//       },
+//       /* more items */
+//     ],
+//     // Owner: {
+//     //   DisplayName: 'STRING_VALUE',
+//     //   ID: 'STRING_VALUE'
+//     // }
+//   },
+//   // ContentMD5: 'STRING_VALUE',
+//   // GrantFullControl: 'STRING_VALUE',
+//   // GrantRead: 'STRING_VALUE',
+//   // GrantReadACP: 'STRING_VALUE',
+//   // GrantWrite: 'STRING_VALUE',
+//   // GrantWriteACP: 'STRING_VALUE'
+// };
+// s3.putBucketAcl(paramsS3, function(err, data) {
+//   if (err) console.log(err, err.stack); // an error occurred
+//   else     console.log(data);           // successful response
+// });
+
+
+
+
+
 	  	callback(null, {template: INDEX_TEMPLATE, params:{fields:fields, bucket:bucketname, files:files}});
 	  }              // successful response
 	});
+
+
+
 
 
 

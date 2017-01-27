@@ -1,5 +1,5 @@
-Laboratorium Amazon Web Services
+Amazon Web Services
 ==============================
 
-Laboratorium 4 - Simple Storage System S3
+Simple server for ec2 ro store s3 objects and send SQS messages
 --------------
